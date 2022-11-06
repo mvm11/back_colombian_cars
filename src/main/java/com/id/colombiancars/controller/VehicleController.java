@@ -1,13 +1,7 @@
 package com.id.colombiancars.controller;
 
 
-import com.id.colombiancars.common.VehicleNotFoundException;
-import com.id.colombiancars.entity.Cell;
-import com.id.colombiancars.entity.Ticket;
 import com.id.colombiancars.entity.Vehicle;
-import com.id.colombiancars.repository.CellRepository;
-import com.id.colombiancars.repository.TicketRepository;
-import com.id.colombiancars.repository.VehicleRepository;
 import com.id.colombiancars.request.EntryRequest;
 import com.id.colombiancars.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/vehicle")
@@ -24,6 +18,12 @@ public class VehicleController {
 
     @Autowired
     private VehicleService vehicleService;
+
+    // Find All
+    @GetMapping(value = "/findAllVehicles")
+    public List<Vehicle> findAllBooks(){
+        return vehicleService.findAllVehicles();
+    }
 
     @PostMapping(value = "/registerEntry")
     public ResponseEntity<Vehicle> registerEntry (@RequestBody EntryRequest entryRequest) {
