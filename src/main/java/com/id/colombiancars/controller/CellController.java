@@ -31,15 +31,4 @@ public class CellController {
     ResponseEntity<Cell> saveCell(@RequestBody Cell cell){
         return new ResponseEntity<>(cellService.saveCell(cell), HttpStatus.CREATED);
     }
-
-    @PutMapping("/updateCellAvailable/{id}")
-    ResponseEntity<Cell> updateCellAvailable(@PathVariable Long id){
-        return new ResponseEntity<>(cellService.updateCellAvailable(id), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/deleteCell/{id}")
-    ResponseEntity<String> deleteCell(@PathVariable Long id){
-        cellService.deleteCell(id);
-        return new ResponseEntity<>("Cell deleted successful",HttpStatus.NO_CONTENT);
-    }
 }
