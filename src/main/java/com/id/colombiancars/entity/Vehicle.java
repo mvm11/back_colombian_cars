@@ -58,4 +58,6 @@ public class Vehicle {
         this.licensePlate = entryRequest.getLicensePlate();
         this.type = entryRequest.getType();
     }
+
+
 }
