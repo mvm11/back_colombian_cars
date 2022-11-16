@@ -3,10 +3,12 @@ package com.id.colombiancars.service;
 import com.id.colombiancars.common.*;
 import com.id.colombiancars.entity.Cell;
 import com.id.colombiancars.entity.Ticket;
+import com.id.colombiancars.entity.User;
 import com.id.colombiancars.entity.Vehicle;
 import com.id.colombiancars.gateway.VehicleGateway;
 import com.id.colombiancars.repository.CellRepository;
 import com.id.colombiancars.repository.TicketRepository;
+import com.id.colombiancars.repository.UserRepository;
 import com.id.colombiancars.repository.VehicleRepository;
 import com.id.colombiancars.request.EntryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class VehicleService implements VehicleGateway {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private CellService cellService;
@@ -111,10 +116,8 @@ public class VehicleService implements VehicleGateway {
     private Vehicle setValuesForNewVehicle(EntryRequest entryRequest, Random random, List<Cell> availableCells) {
         Vehicle vehicle = new Vehicle();
         Ticket ticket = new Ticket();
+        User user = new User();
         ticket.setEntryHour(new Date());
-        vehicle.setOwnerName(entryRequest.getOwnerName());
-        vehicle.setOwnerLastname(entryRequest.getOwnerLastname());
-        vehicle.setOwnerDni(entryRequest.getOwnerDni());
         vehicle.setLicensePlate(entryRequest.getLicensePlate());
         vehicle.setType(entryRequest.getType());
         vehicle.setParking(true);
@@ -122,6 +125,11 @@ public class VehicleService implements VehicleGateway {
         vehicle.getCell().setOccupied(true);
         ticket.setAssignedCell(vehicle.getCell().getCellName());
         ticket.setVehicle(vehicle);
+        user.setOwnerName(entryRequest.getOwnerName());
+        user.setOwnerLastname(entryRequest.getOwnerLastname());
+        user.setOwnerDni(entryRequest.getOwnerDni());
+        userRepository.save(user);
+        vehicle.setUser(user);
         ticketRepository.save(ticket);
         return vehicleRepository.save(vehicle);
     }
@@ -129,16 +137,17 @@ public class VehicleService implements VehicleGateway {
     private Vehicle setValuesForOldVehicle(EntryRequest entryRequest, Random random, List<Cell> availableCells, Vehicle vehicleValidated) {
         Ticket ticket = new Ticket();
         ticket.setEntryHour(new Date());
-        vehicleValidated.setOwnerName(entryRequest.getOwnerName());
-        vehicleValidated.setOwnerLastname(entryRequest.getOwnerLastname());
-        vehicleValidated.setOwnerDni(entryRequest.getOwnerDni());
         vehicleValidated.setLicensePlate(entryRequest.getLicensePlate());
         vehicleValidated.setType(entryRequest.getType());
         vehicleValidated.setParking(true);
         vehicleValidated.setCell(getRandomCell(random, availableCells));
         vehicleValidated.getCell().setOccupied(true);
+        vehicleValidated.getUser().setOwnerName(entryRequest.getOwnerName());
+        vehicleValidated.getUser().setOwnerLastname(entryRequest.getOwnerLastname());
+        vehicleValidated.getUser().setOwnerDni(entryRequest.getOwnerDni());
         ticket.setAssignedCell(vehicleValidated.getCell().getCellName());
         ticket.setVehicle(vehicleValidated);
+        userRepository.save(vehicleValidated.getUser());
         ticketRepository.save(ticket);
         return vehicleRepository.save(vehicleValidated);
     }

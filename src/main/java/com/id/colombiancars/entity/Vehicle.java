@@ -22,16 +22,6 @@ public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name="ownerName")
-    private String ownerName;
-
-    @Column(name="ownerLastname")
-    private String ownerLastname;
-
-    @Column(name="ownerDni")
-    private String ownerDni;
-
     @Column(name="licensePlate")
     private String licensePlate;
 
@@ -46,15 +36,17 @@ public class Vehicle {
     @JoinColumn(name = "cell_id")
     private Cell cell;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
     @JsonBackReference
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets = new ArrayList<>();
 
 
     public Vehicle(EntryRequest entryRequest) {
-        this.ownerName = entryRequest.getOwnerName();
-        this.ownerLastname = entryRequest.getOwnerLastname();
-        this.ownerDni = entryRequest.getOwnerDni();
         this.licensePlate = entryRequest.getLicensePlate();
         this.type = entryRequest.getType();
     }
