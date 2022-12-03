@@ -2,7 +2,7 @@ package com.id.colombiancars.controller;
 
 
 import com.id.colombiancars.entity.Vehicle;
-import com.id.colombiancars.request.EntryRequest;
+import com.id.colombiancars.request.VehicleRequest;
 import com.id.colombiancars.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ public class VehicleController {
     }
 
     @PostMapping(value = "/registerEntry")
-    public ResponseEntity<Vehicle> registerEntry (@RequestBody EntryRequest entryRequest) {
-        return new ResponseEntity<>(vehicleService.registerEntry(entryRequest), HttpStatus.CREATED);
+    public ResponseEntity<Vehicle> registerEntry (@RequestBody VehicleRequest vehicleRequest) {
+        return new ResponseEntity<>(vehicleService.registerEntry(vehicleRequest), HttpStatus.CREATED);
 
     }
 

@@ -3,14 +3,13 @@ package com.id.colombiancars.service;
 import com.id.colombiancars.common.*;
 import com.id.colombiancars.entity.Cell;
 import com.id.colombiancars.entity.Ticket;
-import com.id.colombiancars.entity.User;
 import com.id.colombiancars.entity.Vehicle;
 import com.id.colombiancars.gateway.VehicleGateway;
 import com.id.colombiancars.repository.CellRepository;
 import com.id.colombiancars.repository.TicketRepository;
 import com.id.colombiancars.repository.UserRepository;
 import com.id.colombiancars.repository.VehicleRepository;
-import com.id.colombiancars.request.EntryRequest;
+import com.id.colombiancars.request.VehicleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 public class VehicleService implements VehicleGateway {
@@ -72,27 +70,19 @@ public class VehicleService implements VehicleGateway {
     }
 
     @Override
-    public Vehicle registerEntry(EntryRequest entryRequest) {
+    public Vehicle registerEntry(VehicleRequest vehicleRequest) {
         Random random = new SecureRandom();
 
         List<Cell> cells = cellRepository.findAll();
-        List<Cell> availableCells = getAvailableCells(cells);
         List<Vehicle> vehicles = vehicleRepository.findAll();
 
-        Vehicle vehicleValidated = getVehicleValidated(entryRequest, vehicles);
+        Vehicle vehicleValidated = getVehicleValidated(vehicleRequest, vehicles);
 
         if(isParking(vehicleValidated)){
             throwParkingException();
         }
 
-        if(validateOldVehicle(vehicleValidated)){
-            return setValuesForOldVehicle(entryRequest, random, availableCells, vehicleValidated);
-        }
 
-        if (validateAvailableCells(availableCells)) {
-
-            return setValuesForNewVehicle(entryRequest, random, availableCells);
-        }
 
         throw new ParkingException((HttpStatus.INTERNAL_SERVER_ERROR), "There aren't cells available");
     }
@@ -113,48 +103,12 @@ public class VehicleService implements VehicleGateway {
         return vehicleValidated.isParking();
     }
 
-    private Vehicle setValuesForNewVehicle(EntryRequest entryRequest, Random random, List<Cell> availableCells) {
-        Vehicle vehicle = new Vehicle();
-        Ticket ticket = new Ticket();
-        User user = new User();
-        ticket.setEntryHour(new Date());
-        vehicle.setLicensePlate(entryRequest.getLicensePlate());
-        vehicle.setType(entryRequest.getType());
-        vehicle.setParking(true);
-        vehicle.setCell(getRandomCell(random, availableCells));
-        vehicle.getCell().setOccupied(true);
-        ticket.setAssignedCell(vehicle.getCell().getCellName());
-        ticket.setVehicle(vehicle);
-        user.setOwnerName(entryRequest.getOwnerName());
-        user.setOwnerLastname(entryRequest.getOwnerLastname());
-        user.setOwnerDni(entryRequest.getOwnerDni());
-        userRepository.save(user);
-        vehicle.setUser(user);
-        ticketRepository.save(ticket);
-        return vehicleRepository.save(vehicle);
-    }
 
-    private Vehicle setValuesForOldVehicle(EntryRequest entryRequest, Random random, List<Cell> availableCells, Vehicle vehicleValidated) {
-        Ticket ticket = new Ticket();
-        ticket.setEntryHour(new Date());
-        vehicleValidated.setLicensePlate(entryRequest.getLicensePlate());
-        vehicleValidated.setType(entryRequest.getType());
-        vehicleValidated.setParking(true);
-        vehicleValidated.setCell(getRandomCell(random, availableCells));
-        vehicleValidated.getCell().setOccupied(true);
-        vehicleValidated.getUser().setOwnerName(entryRequest.getOwnerName());
-        vehicleValidated.getUser().setOwnerLastname(entryRequest.getOwnerLastname());
-        vehicleValidated.getUser().setOwnerDni(entryRequest.getOwnerDni());
-        ticket.setAssignedCell(vehicleValidated.getCell().getCellName());
-        ticket.setVehicle(vehicleValidated);
-        userRepository.save(vehicleValidated.getUser());
-        ticketRepository.save(ticket);
-        return vehicleRepository.save(vehicleValidated);
-    }
 
-    private Vehicle getVehicleValidated(EntryRequest entryRequest, List<Vehicle> vehicles) {
+
+    private Vehicle getVehicleValidated(VehicleRequest vehicleRequest, List<Vehicle> vehicles) {
         return vehicles.stream().filter(vehicle -> vehicle.getLicensePlate()
-                        .equalsIgnoreCase(entryRequest.getLicensePlate()))
+                        .equalsIgnoreCase(vehicleRequest.getLicensePlate()))
                 .findFirst()
                 .orElse(new Vehicle());
     }
@@ -166,11 +120,7 @@ public class VehicleService implements VehicleGateway {
 
 
 
-    private List<Cell> getAvailableCells(List<Cell> cells) {
-        return cells.stream()
-                .filter(cell -> !cell.isOccupied()).
-                collect(Collectors.toList());
-    }
+
 
     @Override
     public Vehicle registerDeparture(String licensePlate) {
@@ -181,10 +131,9 @@ public class VehicleService implements VehicleGateway {
             throwNotParkingException();
         }
 
-        vehicle.getCell().setOccupied(false);
-        cellRepository.save(vehicle.getCell());
+
         vehicle.setParking(false);
-        vehicle.setCell(null);
+
         Ticket newTicket = getTicket(vehicle);
 
         newTicket.setDepartureHour(new Date());

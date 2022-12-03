@@ -1,14 +1,19 @@
 package com.id.colombiancars.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "cells", uniqueConstraints = {@UniqueConstraint(columnNames = {"cellName"})})
+@Builder
+@Table(name = "cells")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class Cell {
 
 
@@ -16,9 +21,12 @@ public class Cell {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "cellName")
+    @Column(name = "cellName", unique = true)
     private String cellName;
 
     @Column(name = "isOccupied")
     private boolean isOccupied;
+
+    @Column(name = "hasVehicle")
+    private boolean hasVehicle;
 }

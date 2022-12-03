@@ -1,5 +1,6 @@
 package com.id.colombiancars.request;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,16 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntryRequest {
+public class UserRequest {
 
-    private String ownerName;
-
-    private String ownerLastname;
-
-    private String ownerDni;
-
-    private String licensePlate;
-
-    private String type;
+    private String name;
+    private String lastname;
+    private String dni;
 
 }

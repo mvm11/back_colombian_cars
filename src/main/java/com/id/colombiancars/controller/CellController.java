@@ -1,6 +1,9 @@
 package com.id.colombiancars.controller;
 
 import com.id.colombiancars.entity.Cell;
+import com.id.colombiancars.entity.User;
+import com.id.colombiancars.request.CellRequest;
+import com.id.colombiancars.request.UserRequest;
 import com.id.colombiancars.service.CellService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +31,15 @@ public class CellController {
     }
 
     @PostMapping("/saveCell")
-    ResponseEntity<Cell> saveCell(@RequestBody Cell cell){
-        return new ResponseEntity<>(cellService.saveCell(cell), HttpStatus.CREATED);
+    ResponseEntity<Cell> saveCell(@RequestBody CellRequest cellRequest){
+        return new ResponseEntity<>(cellService.saveCell(cellRequest), HttpStatus.CREATED);
     }
+
+    // Update
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<Cell> updateCell (@PathVariable Long id, @RequestBody CellRequest cellRequest) {
+        return new ResponseEntity<>(cellService.updateCell(id, cellRequest), HttpStatus.OK);
+
+    }
+
 }

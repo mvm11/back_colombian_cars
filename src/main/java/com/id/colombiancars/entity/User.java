@@ -1,11 +1,15 @@
 package com.id.colombiancars.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Builder
 @Table(name = "users")
 @Getter
 @Setter
@@ -19,18 +23,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="ownerName")
-    private String ownerName;
+    @Column(name="name")
+    private String name;
 
-    @Column(name="ownerLastname")
-    private String ownerLastname;
+    @Column(name="lastname")
+    private String lastname;
 
-    @Column(name="ownerDni")
-    private String ownerDni;
+    @Column(name="dni", unique = true)
+    private String dni;
 
-    public User(String ownerName, String ownerLastname, String ownerDni) {
-        this.ownerName = ownerName;
-        this.ownerLastname = ownerLastname;
-        this.ownerDni = ownerDni;
-    }
+    @Column(name="isSubscribed")
+    private boolean isSubscribed;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "cell_id")
+    private Cell cell;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vehicle> vehicles;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Invoice> invoices;
+
 }
