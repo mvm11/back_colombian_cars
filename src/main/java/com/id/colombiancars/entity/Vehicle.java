@@ -32,7 +32,7 @@ public class Vehicle {
 
     @JsonBackReference
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Ticket> tickets = new ArrayList<>();
+    private List<Ticket> tickets;
 
 
     public Vehicle(VehicleRequest vehicleRequest) {

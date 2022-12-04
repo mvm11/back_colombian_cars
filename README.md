@@ -37,42 +37,7 @@ Debes ver en la consola lo siguiente:
 Ahora puedes probar las API del proyecto con una herramienta como postman. O puedes descargar el repositorio del frontend y probrar el proyecto completo.
 
 
----
-## Rutas para vehículos
+## Documentación API
 ```
-${BaseURL} = http://localhost:8080/vehicle
+http://localhost:8080/swagger-ui/index.html
 ```
-| Action                       | Method   | Rout                               |
-|------------------------------|----------|------------------------------------|
-| Encontrar todos los vehículos | `GET`    | `${BaseURL}/findAllVehicles`       |
-| Registrar una entrada        | `POST`   | `${BaseURL}/registerEntry`         |
-| Registrar una salida  | `PUT`    | `${BaseURL}/registerDeparture/${licensePlate}` |
-
-## Rutas para celdas
-```
-${BaseURL} = http://localhost:8080/cell
-```
-| Action                        | Method | Rout                                        |
-|-------------------------------|--------|---------------------------------------------|
-| Encontrar celda los por Id    | `GET`  | `${BaseURL}/findCellById/${cellId}`         |
-| Encontrar todas las celda     | `GET`  | `${BaseURL}/findAllCells`                  |
-| Guardar una nueva celda | `POST` | `${BaseURL}/saveCell` |
-
-
-## Rutas para tickets
-```
-${BaseURL} = http://localhost:8080/ticket
-```
-| Action                      | Method | Rout                                |
-|-----------------------------|--------|-------------------------------------|
-| Encontrar todos los tickets | `GET`  | `${BaseURL}/findAllTickets`         |
-
-
-
-
-### Aspectos a tener en cuenta
-
-- No se pueden registrar vehículos sin antes crear una celda
-- No se puede registrar un vehículo si este ya se encuentra aparcado
-- No se puede registrar una salida de vehículo si este no se encuentra aparacado
-
