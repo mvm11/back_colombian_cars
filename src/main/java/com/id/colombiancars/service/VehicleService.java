@@ -88,11 +88,7 @@ public class VehicleService implements VehicleGateway {
 
         foundUser.getCell().setHasVehicle(true);
 
-        Vehicle vehicle = Vehicle.builder()
-                .licensePlate(vehicleRequest.getLicensePlate())
-                .user(foundUser)
-                .type(vehicleRequest.getType())
-                .build();
+        Vehicle vehicle = buildVehicle(vehicleRequest, foundUser);
 
         Ticket ticket = Ticket.builder()
                 .assignedCell(foundUser.getCell().getCellName())
@@ -105,6 +101,18 @@ public class VehicleService implements VehicleGateway {
         vehicleRepository.save(vehicle);
 
         return vehicle;
+    }
+
+    private Vehicle buildVehicle(VehicleRequest vehicleRequest, User foundUser) {
+        return vehicleRepository.findAll()
+                .stream()
+                .filter(vehicle1 -> vehicle1.getLicensePlate().equalsIgnoreCase(vehicleRequest.getLicensePlate()))
+                .findFirst()
+                .orElse(Vehicle.builder()
+                        .licensePlate(vehicleRequest.getLicensePlate())
+                        .user(foundUser)
+                        .type(vehicleRequest.getType())
+                        .build());
     }
 
     private final Map<String, Function<VehicleRequest, ?>> vehicleRequestValidations = Map.of(
@@ -141,14 +149,23 @@ public class VehicleService implements VehicleGateway {
     public Vehicle registerDeparture(String licensePlate) {
 
         Vehicle vehicle = getVehicleByLicensePlate(licensePlate);
-
+        validateVehicleInCell(vehicle);
+        vehicle.getUser().getCell().setHasVehicle(false);
         Ticket foundTicket = getTicket(vehicle);
 
         foundTicket.setDepartureHour(new Date());
         vehicle.getTickets().removeIf(ticket -> ticket.getDepartureHour()==null);
         vehicle.getTickets().add(foundTicket);
 
+        cellRepository.save(vehicle.getUser().getCell());
+
         return vehicleRepository.save(vehicle);
+    }
+
+    private static void validateVehicleInCell(Vehicle vehicle) {
+        if(!vehicle.getUser().getCell().isHasVehicle()){
+            throw new ParkingException(HttpStatus.BAD_REQUEST, "This cell doesn't have any vehicle parking in it");
+        }
     }
 
     private static Ticket getTicket(Vehicle vehicle) {
