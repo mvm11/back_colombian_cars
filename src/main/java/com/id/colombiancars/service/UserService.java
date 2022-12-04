@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class UserService implements UserGateway {
@@ -36,7 +37,7 @@ public class UserService implements UserGateway {
 
     @Autowired
     InvoiceRepository invoiceRepository;
-    Random random = new SecureRandom();
+    static Random random = new SecureRandom();
 
 
     @Override
@@ -76,12 +77,23 @@ public class UserService implements UserGateway {
 
     private static Invoice buildInvoice(User user) {
         return Invoice.builder()
+                .reference(generateRandomString())
                 .amount(100000.0)
                 .state("pending")
                 .startDate(LocalDate.now())
                 .cutOfDate(LocalDate.now().plusDays(30))
                 .user(user)
                 .build();
+    }
+
+    public static String generateRandomString() {
+
+        String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        return IntStream.range(0, 6)
+                .mapToObj(i -> characters.charAt(random.nextInt(characters.length())))
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 
     private static User buildUser(UserRequest userRequest, Cell cell) {

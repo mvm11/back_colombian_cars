@@ -2,9 +2,7 @@ package com.id.colombiancars.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.id.colombiancars.request.VehicleRequest;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,7 +12,9 @@ import java.util.List;
 @Table(name = "vehicles")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Vehicle {
 
     @Id
@@ -25,8 +25,6 @@ public class Vehicle {
     @Column(name="type")
     private String type;
 
-    @Column(name="isParking")
-    private boolean isParking;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)

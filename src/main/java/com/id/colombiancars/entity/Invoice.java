@@ -19,6 +19,9 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="reference")
+    private String reference;
+
     @Column(name="amount")
     private Double amount;
 
